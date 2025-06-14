@@ -1,3 +1,3 @@
 #!/bin/bash
-set
-declare -p
+echo "BASH=$BASH"
+echo "BASHOPTS=$BASHOPTS"
