@@ -1,2 +1,3 @@
 #!/bin/bash
+echo "HBTN=89"
 printenv
