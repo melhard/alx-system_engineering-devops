@@ -1,3 +1,5 @@
 #!/bin/bash
-echo "BASH=$BASH"
-echo "BASHOPTS=$BASHOPTS"
+# Print all local and environment variables in VAR=value format
+( set -o posix ; set )
+# Print all functions
+declare -f
