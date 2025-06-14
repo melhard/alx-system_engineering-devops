@@ -1,10 +1,2 @@
 #!/bin/bash
- HEAD
-# Print all local and environment variables in VAR=value format
-( set -o posix ; set )
-# Print all functions
-declare -f
-
-(set -o posix; set; declare -f)
-
- 458f482 (Add script to list local vars, env vars, and functions)
+(set -o posix ; set)
