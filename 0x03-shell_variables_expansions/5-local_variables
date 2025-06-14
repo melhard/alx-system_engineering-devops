@@ -1,2 +1,2 @@
 #!/bin/bash
-( set -o posix ; set )  # يطبع المتغيرات المحلية والبيئية مع بعض والدوال
+set | grep -v '^declare'
