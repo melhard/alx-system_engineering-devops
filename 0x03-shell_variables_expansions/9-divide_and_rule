@@ -1,0 +1,5 @@
+#!/bin/bash
+# Print the result of POWER divided by DIVIDE
+
+# Use arithmetic expansion to perform integer division
+echo $(( POWER / DIVIDE ))
