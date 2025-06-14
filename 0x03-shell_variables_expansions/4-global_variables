@@ -1,6 +1,1 @@
-#!/bin/bash
-echo "HBTN=89"
-
-=======
-
->>>>>>> 1de938a (task 4: print HBTN=89)
+HBTN=89
