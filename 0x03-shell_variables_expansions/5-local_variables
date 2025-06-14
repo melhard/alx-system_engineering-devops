@@ -1,16 +1,2 @@
 #!/bin/bash
-# 5-local_variables
-
-# Print environment variables (plain VAR=VALUE)
-env
-
-# Print local variables (plain VAR=VALUE)
-(compgen -v | while read var; do
-  # Avoid printing env variables twice by checking if it's in env
-  if ! env | grep -q "^$var="; then
-    printf '%s=%s\n' "$var" "${!var}"
-  fi
-done)
-
-# Print functions names (just the function names)
-compgen -A function
+declare -p
