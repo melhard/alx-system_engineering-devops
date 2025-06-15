@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $((10#$(echo "${WATER//./}" | tr 'water' '01234') + 10#$(echo "${STIR//./}" | tr 'stir' '0123'))) | xargs printf '%o' | tr '01234567' 'bestchol'
+echo "$(( $(echo "${WATER//./}" | tr 'water' '01234') + $(echo "${STIR//./}" | tr 'stir' '0123') ))" | awk '{ split("b e s t c h o l",a," "); n=$1; out=""; while(n){ out=a[n%8] out; n=int(n/8)} print out }'
