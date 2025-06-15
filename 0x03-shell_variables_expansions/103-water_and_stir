@@ -1,2 +1,2 @@
-#!/bin/bash#!/bin/bash
+#!/bin/bash
 echo $(( $(echo ${WATER} | tr -d '.' | tr 'water' '01234') + $(echo ${STIR} | tr -d '.' | tr 'stir' '0123') )) | awk '{b="bestchol"; s=""; while($1>0){r=$1%8; $1=int($1/8); s=substr(b,r+1,1) s} print s}'
