@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "$(( $(echo "${WATER//./}" | tr 'water' '01234') + $(echo "${STIR//./}" | tr 'stir' '0123') ))" | awk 'BEGIN{split("b e s t c h o l",a," ")}{n=$1;out="";while(n>0){r=n%8;out=a[r]out;n=int(n/8)}print out}'
+echo "$(( $(echo $WATER | tr 'water' '01234') + $(echo $STIR | tr 'stir' '0123') ))" | awk '{a["0"]="b";a["1"]="e";a["2"]="s";a["3"]="t";a["4"]="c";a["5"]="h";a["6"]="o";a["7"]="l";n=$1;o="";while(n){r=n%8;o=a[r]o;n=int(n/8)}print o}'
