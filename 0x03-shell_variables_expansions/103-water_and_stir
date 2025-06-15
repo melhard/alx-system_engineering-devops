@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $(( $(tr 'ewatr' '01234' <<<"$WATER") + $(tr 'tir.' '0123' <<<"$STIR") )) | awk '{b="bestchol";r="";while($1){r=substr(b,($1%8)+1,1) r;$1=int($1/8)}print r}'
+tr 'ewatr' 01234 <<< "$WATER" | xargs -I % bash -c 'tr "tir." 0123 <<< "$STIR"' | xargs -I % bash -c 'echo $(( $(tr "ewatr" 01234 <<< "$WATER") + $(tr "tir." 0123 <<< "$STIR") ))' | awk '{b="bestchol";r="";while($1){r=substr(b,($1%8)+1,1) r;$1=int($1/8)}print r}'
