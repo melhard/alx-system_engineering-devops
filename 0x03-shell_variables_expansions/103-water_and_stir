@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $(( $(echo ${WATER} | tr -d '.' | tr 'water' '01234') + $(echo ${STIR} | tr -d '.' | tr 'stir' '0123') )) | awk '{b="bestchol" s="" while($1>0){r=$1%8 $1=int($1/8) s=substr(b,r+1,1) s} print s}'
+water_to_dec(){ local v=$1 r=0 i c; for((i=0;i<${#v};i++)); do c=${v:i:1}; case $c in w) d=0;; a) d=1;; t) d=2;; e) d=3;; r) d=4;; *) d=0;; esac; ((r=r*5+d)); done; echo $r;}; stir_to_dec(){ local v=$1 r=0 i c; for((i=0;i<${#v};i++)); do c=${v:i:1}; case $c in s) d=0;; t) d=1;; i) d=2;; r) d=3;; *) d=0;; esac; ((r=r*4+d)); done; echo $r;}; dec_to_bestchol(){ local v=$1 b=bestchol r=; while((v>0)); do d=$((v%8)); r=${b:d:1}$r; ((v/=8)); done; echo $r;}; dec_to_bestchol $(( $(water_to_dec "${WATER//./}") + $(stir_to_dec "${STIR//./}") ))
