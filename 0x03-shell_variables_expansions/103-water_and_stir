@@ -1,2 +1,2 @@
 #!/bin/bash
-read -r -n1 c; do i=$((i*5+${water_base[c]})); done <<<"${WATER//./}"
+echo $(( $(echo "${WATER//./}" | tr 'water' '01234') + $(echo "${STIR//./}" | tr 'stir' '0123') )) | xargs printf '%o\n' | tr '01234567' 'bestchol'
