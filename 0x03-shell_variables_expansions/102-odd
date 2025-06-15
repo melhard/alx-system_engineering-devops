@@ -1,6 +1,3 @@
 #!/bin/bash
-<<<<<<< HEAD
 while read l; do read _ && echo "$l" || echo "$l"; done
-=======
 i=0; while read l; do i=$((i+1)); case $((i%2)) in 1) echo "$l";; esac; done
->>>>>>> 538d705 (Add 102-odd script: print every other line)
