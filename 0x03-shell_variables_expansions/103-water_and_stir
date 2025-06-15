@@ -1,2 +1,2 @@
 #!/bin/bash
-while read -r -n1 c; do i=$((i*5+${water_base[c]})); done <<<"${WATER//./}"
+read -r -n1 c; do i=$((i*5+${water_base[c]})); done <<<"${WATER//./}"
