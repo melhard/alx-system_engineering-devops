@@ -1,0 +1,97 @@
+                      Internet
+                         |
+               +-------------------+
+               |  DNS (www.foobar.com) points to Load Balancer IP |
+               +-------------------+
+                         |
+               +-------------------+
+               |  Load Balancer     |  (HAProxy)
+               +---------+---------+
+                         |
+          +--------------+--------------+
+          |                             |
++----------------+             +----------------+
+| Web Server 1   |             | Web Server 2   |  (Nginx + Application Server + Code)
++----------------+             +----------------+
+          |                             |
+          +--------------+--------------+
+                         |
+               +-------------------+
+               |   Database Server  |  (MySQL Primary-Replica cluster)
+               +-------------------+
+
+Explanation of added elements and their purposes:
+1. Load Balancer (HAProxy)
+
+    Why added?
+    To distribute incoming traffic evenly between multiple web servers, preventing any single web server from becoming overloaded.
+
+    Distribution Algorithm:
+    We use Round Robin — this algorithm sends each new request to the next server in the list sequentially, cycling back after the last server. This provides simple, fair load distribution.
+
+    Active-Active vs Active-Passive Setup:
+
+        Active-Active: Both (or all) web servers are actively serving traffic simultaneously. This increases capacity and provides redundancy.
+
+        Active-Passive: One server actively serves traffic, and the other(s) stay on standby, only taking over if the active server fails.
+
+    Our setup is Active-Active, because HAProxy forwards requests to both web servers to share load.
+
+2. Two Web Servers
+
+    Each runs Nginx (web server) and the application server software (e.g., PHP-FPM, Node.js), along with a synchronized copy of the application files (your code base).
+
+    Why two?
+    For redundancy and scalability. If one fails, the other still serves users. It also allows handling more traffic by parallel processing.
+
+3. Database (MySQL Primary-Replica Cluster)
+
+    Primary Node (Master):
+    Handles all write operations (INSERT, UPDATE, DELETE). This is where application servers write data.
+
+    Replica Node (Slave):
+    Receives asynchronous read-only copies of the data from the primary via replication.
+
+    Why this setup?
+    Improves performance by distributing read operations to replicas, reducing load on the primary. Also provides redundancy for data availability.
+
+    Difference between Primary and Replica in regard to application:
+
+        The application sends all writes to the Primary.
+
+        Reads can be directed to either Primary or Replica, often optimized to send reads to replicas to scale better.
+
+Communication flow example:
+
+    User requests www.foobar.com → DNS resolves to Load Balancer IP.
+
+    Load Balancer (HAProxy) forwards request to Web Server 1 or Web Server 2 (round robin).
+
+    Web Server runs application code, possibly querying the database.
+
+    Writes go to the Primary MySQL server.
+
+    Reads can be served from the Replica MySQL server.
+
+    Response is sent back through the Load Balancer to the user.
+
+Issues in this infrastructure:
+1. Single Points of Failure (SPOF)
+
+    The Load Balancer itself is a SPOF. If it fails, no traffic is routed.
+
+    The Database Primary node is also a SPOF for writes — if it goes down, writes stop.
+
+    No redundancy for Load Balancer and Database Primary unless added (e.g., HAProxy cluster, MySQL failover).
+
+2. Security Issues
+
+    No firewall rules shown, so the servers might be open to unwanted traffic.
+
+    No HTTPS/TLS configured, so traffic between users and servers is unencrypted and vulnerable to interception.
+
+3. Monitoring
+
+    No monitoring or alerting system configured.
+
+    This leads to delays in detecting failures, high load, or security breaches.
