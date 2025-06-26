@@ -1,0 +1,45 @@
+User Computer
+    |
+    v
+Internet
+    |
+    v
+Server (IP: 8.8.8.8)
+  ├── Nginx (Web Server)
+  ├── Application Server (e.g., PHP, Node.js)
+  ├── Application Files (Your code base)
+  └── MySQL Database
+
+Explanation of components:
+
+    What is a server?
+    A physical or virtual machine that provides resources and services to other computers over a network.
+
+    Role of the domain name:
+    Translates human-readable names (like www.foobar.com) into IP addresses so browsers can locate the server.
+
+    Type of DNS record for www in www.foobar.com:
+    Usually an A record pointing directly to the server's IP address (8.8.8.8).
+
+    Role of the web server (Nginx):
+    Handles incoming HTTP requests, serves static files, and forwards dynamic requests to the application server.
+
+    Role of the application server:
+    Runs backend code to process business logic, generate dynamic content, and interact with the database.
+
+    Role of the database (MySQL):
+    Stores, retrieves, and manages persistent data for the application.
+
+    Communication protocol between server and user:
+    HTTP or HTTPS over TCP/IP.
+
+Issues with this infrastructure:
+
+    Single Point of Failure (SPOF):
+    The entire system depends on one server; if it fails, the website becomes unreachable.
+
+    Downtime during maintenance:
+    Deploying new code or restarting services causes the site to be temporarily unavailable.
+
+    Limited scalability:
+    The single server can only handle limited traffic, so heavy loads may cause slowdowns or crashes.
