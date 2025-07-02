@@ -1,0 +1,105 @@
+                      Internet
+                         |
+                    +-----------+
+                    |  Firewall |  <-- Firewall #1
+                    +-----------+
+                         |
+               +-------------------+
+               |   Load Balancer    |  (HAProxy with SSL termination)
+               +-------------------+
+                         |
+                    +-----------+
+                    |  Firewall |  <-- Firewall #2
+                    +-----------+
+                         |
+          +--------------+--------------+
+          |                             |
++----------------+             +----------------+
+| Web Server 1   |             | Web Server 2   |  (Nginx + App Server + Monitoring Client)
++----------------+             +----------------+
+          |                             |
+      +-----------+               +-----------+
+      | Firewall  |               | Firewall  |  <-- Firewall #3 for DB server protection
+      +-----------+               +-----------+
+          |                             |
+               +-------------------+
+               |   Database Server  |  (MySQL Primary-Replica cluster + Monitoring Client)
+               +-------------------+
+
+Monitoring Clients (e.g. Sumologic agents) deployed on all 3 servers collecting metrics and logs.
+
+
+Additional Elements & Why They Are Added:
+1. Three Firewalls
+
+    Why add firewalls?
+    Firewalls protect each critical part of the infrastructure by filtering inbound/outbound traffic based on security rules.
+
+        Firewall #1 protects the perimeter (between Internet and Load Balancer).
+
+        Firewall #2 protects internal web servers from unauthorized access.
+
+        Firewall #3 protects the database server, restricting access only to trusted sources (web servers).
+
+2. SSL Certificate for HTTPS
+
+    Why serve traffic over HTTPS?
+    Encrypts communication between users and servers, ensuring confidentiality and integrity of data, protecting against eavesdropping and man-in-the-middle attacks.
+
+    The SSL certificate is installed on the Load Balancer (HAProxy) to terminate SSL, i.e., decrypt incoming encrypted requests before forwarding.
+
+3. Monitoring Clients
+
+    Agents (e.g., Sumologic data collectors) installed on all three servers to collect logs, metrics (CPU, memory, disk, network), and application-specific data.
+
+    Why monitoring?
+    Detects anomalies, tracks performance (like QPS - Queries per Second), helps in troubleshooting, capacity planning, and security auditing.
+
+How Monitoring Works:
+
+    Data Collection:
+    Monitoring clients gather system metrics, application logs, and web server statistics continuously.
+
+    Data Transmission:
+    These clients send data securely to a centralized monitoring platform (e.g., Sumologic cloud service).
+
+    Analysis & Alerting:
+    The platform analyzes data, visualizes trends, and sends alerts on performance degradation or failures.
+
+Monitoring Web Server QPS (Queries Per Second):
+
+    Enable web server access logs with timestamps.
+
+    Monitoring clients parse logs to count incoming requests per second.
+
+    Alternatively, use web server status modules (e.g., Nginx’s stub_status) to directly extract QPS metrics.
+
+    Visualize and alert based on QPS thresholds to ensure the infrastructure handles expected load.
+
+Issues with This Infrastructure:
+1. Terminating SSL at the Load Balancer is an issue because:
+
+    Traffic between Load Balancer and Web Servers is unencrypted unless extra steps (like re-encrypting) are taken.
+
+    This internal unencrypted traffic can be intercepted if the internal network is compromised.
+
+    Adds a security risk inside the data center or cloud environment.
+
+2. Having only one MySQL server accepting writes is an issue because:
+
+    It is a single point of failure for all write operations; if it goes down, no data can be written.
+
+    Limits write scalability, creating a bottleneck under heavy load.
+
+    Requires setting up failover and replication mechanisms to improve availability.
+
+3. Having servers with all the same components (database, web server, application server) might be a problem because:
+
+    It can cause resource contention since each server tries to run heavy components simultaneously.
+
+    Difficult to scale each tier independently (database load vs. web server load).
+
+    Increases complexity in synchronization and risk of data inconsistency.
+
+    Violates the principle of separation of concerns and can reduce reliability.
+
