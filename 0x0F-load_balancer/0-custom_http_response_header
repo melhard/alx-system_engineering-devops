@@ -1,23 +1,20 @@
 #!/usr/bin/env bash
-# Configure Nginx with a custom header X-Served-By containing the hostname
+# Configures a new Ubuntu server with a custom HTTP header and a /redirect_me 301 redirect
 
-# shellcheck disable=SC2154
+apt-get -y update
+apt-get -y install nginx
+ufw allow 'Nginx HTTP'
 
-# Update package list and install nginx
-apt-get update -y
-apt-get install nginx -y
+echo 'Holberton School' > /var/www/html/index.nginx-debian.html
 
-# Create a simple index.html page
-echo "Hello World!" > /var/www/html/index.html
+# Add the custom header inside the server block
+sed -i '/listen 80 default_server;/a \
+    add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
 
-# Backup the default nginx config file
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+# Add location block for /redirect_me redirect before the last }
+sed -i '/^}$/i \
+    location /redirect_me {\
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\
+    }' /etc/nginx/sites-available/default
 
-# Use sed to add the custom header in the server block
-# Insert the line "add_header X-Served-By $hostname;" inside the server block
-
-sed -i '/server_name _;/a \
-    \n\tadd_header X-Served-By $hostname;' /etc/nginx/sites-available/default
-
-# Restart nginx without systemctl
 service nginx restart
