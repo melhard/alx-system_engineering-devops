@@ -1,38 +1,20 @@
 #!/usr/bin/env bash
-# Install nginx and configure /redirect_me for 301 redirection
+# Install nginx web server and configure 301 redirect for /redirect_me
 
-# Update and install nginx
-apt-get update -y
-apt-get install nginx -y
+# Update the package list on the system
+sudo apt -y update
 
-# Create the "Hello World!" index page
-echo "Hello World!" > /var/www/html/index.html
+# Install nginx
+sudo apt -y install nginx
 
-# Backup default config
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+# Create a custom HTML file with "Hello World!" for default website
+sudo sh -c 'echo "Hello World!" > /var/www/html/index.nginx-debian.html'
 
-# Use sed to replace the server block with a custom configuration
-# We'll overwrite the default config to include the redirect
+# Add a new location /redirect_me with a 301 permanent redirect to the YouTube URL
+sudo sed -i '/^}$/i \
+    location /redirect_me {\
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\
+    }' /etc/nginx/sites-available/default
 
-cat > /etc/nginx/sites-available/default <<EOF
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name _;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-}
-EOF
-
-# Restart nginx using service (not systemctl)
-service nginx restart
+# Restart nginx using service command (not systemctl)
+sudo service nginx restart
